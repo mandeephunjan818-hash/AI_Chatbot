@@ -1,0 +1,61 @@
+# Virtual Environment
+venv/
+env/
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Jupyter / Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs & Databases
+*.log
+*.db
+*.sqlite
+
+# Model Files (DO NOT commit large binaries)
+models/
+minilmv2-finetuned/
+*.bin
+*.pt
+*.pth
+*.onnx
+
+# Go
+# Compiled Go binaries (optional: keep if you want to commit built binaries)
+# *.exe
+# chatbot-api
+# But usually ignore:
+*.exe
+*.test
+*.prof
+
+# Go module cache (do not ignore go.mod/go.sum!)
+go-build/
+/tmp/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Docker
+.dockerignore
