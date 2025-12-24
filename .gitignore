@@ -10,6 +10,7 @@ __pycache__/
 *.pyd
 .Python
 *.so
+frontend/node_modules/
 
 # Jupyter / Notebooks
 .ipynb_checkpoints/
