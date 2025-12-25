@@ -21,7 +21,7 @@ An embeddable, multi-tenant AI chatbot that:
 | **Hosting** | Vercel (Frontend), Kubernetes (Backend) | Scalable, secure deployment |
 
 ## 3. Data Flow
-
+```
 ┌─────────────────────────────────────────────────────────────┐
 │                    CLIENT APPLICATIONS                       │
 ├─────────────────────────────────────────────────────────────┤
@@ -68,7 +68,7 @@ An embeddable, multi-tenant AI chatbot that:
            │ • widgets   │ │ • RL │ │          │
            │ • convos    │ │ • ...│ └──────────┘
            └─────────────┘ └──────┘
-
+```
 ## 4. Model Strategy
 
 ### 4.1. Understanding (MINILMv2)
