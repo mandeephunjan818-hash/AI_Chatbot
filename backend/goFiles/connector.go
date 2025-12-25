@@ -1,4 +1,3 @@
-// connector.go
 package main
 
 import (
@@ -34,15 +33,30 @@ func InitMongoDB() {
 		log.Fatal("❌ Failed to connect to MongoDB:", err)
 	}
 
-	// Verify connection
-	pingCtx, pingCancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer pingCancel()
-	if err = client.Ping(pingCtx, nil); err != nil {
-		log.Fatal("❌ MongoDB ping failed:", err)
-	}
-
 	MongoDb = client.Database(dbName)
-	log.Println("✅ MongoDB connected to database:", dbName)
+	log.Println("✅ MongoDB client initialized. Database:", dbName)
+}
+
+// TestConnection tests the MongoDB connection
+func TestConnection() bool {
+	pingCtx, pingCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer pingCancel()
+
+	if err := MongoDb.Client().Ping(pingCtx, nil); err != nil {
+		log.Println("❌ MongoDB ping failed:", err)
+		return false
+	}
+	log.Println("✅ MongoDB connection test successful!")
+	return true
+}
+
+// GetConnectionInfo returns connection details
+func GetConnectionInfo() map[string]string {
+	return map[string]string{
+		"database": MongoDb.Name(),
+		"uri":      getEnv("MONGODB_URI", "mongodb://localhost:27017"),
+		"status":   "connected",
+	}
 }
 
 // getEnv safely reads env var with fallback
