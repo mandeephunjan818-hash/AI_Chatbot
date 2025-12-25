@@ -22,20 +22,52 @@ An embeddable, multi-tenant AI chatbot that:
 
 ## 3. Data Flow
 
-1. **User** types message in embedded widget (`app_id=APP123`, `user_token=usr_abc`)
-2. **React SPA** sends to `POST /api/chat`
-3. **Go API**:
-   - Validates `app_id` + `user_token`
-   - Checks rate limit (Redis)
-   - Generates `session_id = hash(app_id + user_token)`
-4. **Go → Python** (internal): sends `{"text": "...", "session_id": "..."}`  
-5. **Python (MINILMv2 ONNX)**:
-   - Runs inference → returns `{"intent": "...", "mood": "...", "confidences": ...}`
-6. **Go**:
-   - Matches `(intent, mood)` to **reply template**
-   - Generates empathetic response
-   - Logs to **MongoDB** with full context
-7. **Response** sent to frontend → rendered in chat bubble
+┌─────────────────────────────────────────────────────────────┐
+│                    CLIENT APPLICATIONS                       │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐    ┌──────────────────────────────────┐   │
+│  │   Host      │    │     Dashboard SPA                │   │
+│  │  Website    │◄───►  (React + Vercel)               │   │
+│  │             │    │  • Login/Signup                  │   │
+│  │  ┌──────────┴─┐  │  • Widget Management            │   │
+│  │  │  Chat      │  │  • Key Generation               │   │
+│  │  │  Widget    │  │  • Placement Settings           │   │
+│  │  │  (iframe)  │  │                                  │   │
+│  │  └────────────┘  └──────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   API GATEWAY (Go)                          │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │ • JWT Authentication                                 │  │
+│  │ • Rate Limiting                                      │  │
+│  │ • Request Routing                                    │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                               │
+         ┌─────────────────────┼─────────────────────┐
+         │                     │                     │
+         ▼                     ▼                     ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────────┐
+│   AUTH SERVICE  │ │  WIDGET SERVICE │ │    CHAT SERVICE     │
+│   (Go)          │ │   (Go)          │ │     (Go + Python)   │
+│ • Login/Reg     │ │ • Widget CRUD   │ │ • MINILMv2 Inference│
+│ • JWT Issuance  │ │ • Key Generation│ │ • Template Matching │
+│ • Session Mgmt  │ │ • Placement     │ │ • Conversation Flow │
+└─────────────────┘ └─────────────────┘ └─────────────────────┘
+         │                     │                     │
+         └─────────────────────┼─────────────────────┘
+                               │
+                     ┌─────────┴─────────┐
+                     ▼         ▼         ▼
+           ┌─────────────┐ ┌──────┐ ┌──────────┐
+           │   MongoDB   │ │ Redis│ │   ONNX   │
+           │ Collections │ │ Cache│ │  Models  │
+           │ • users     │ │ • JWT│ │ • MINILM │
+           │ • widgets   │ │ • RL │ │          │
+           │ • convos    │ │ • ...│ └──────────┘
+           └─────────────┘ └──────┘
 
 ## 4. Model Strategy
 
